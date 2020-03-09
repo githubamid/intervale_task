@@ -1,0 +1,127 @@
+---
+- name: " Create group - {{ oracle_install_group }} " 
+  group:
+    name: "{{ oracle_install_group }}"
+    state: present
+  tags:
+    - crinstgroup      
+
+- name: " Create group - {{ oracle_group }} "      
+  group:
+    name: "{{ oracle_group }}"
+    state: present    
+  tags:
+    - crdbagroup
+
+- name: "Create the user {{ oracle_user }} and append to the group {{ oracle_install_group }} "
+  user:
+    name: "{{ oracle_user }}"
+    password: "{{ oracle_user_password }}"
+    groups: "{{ oracle_install_group}},{{ oracle_group }}"
+  tags:
+    - oruser
+
+- name: Create directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ oracle_user }}"
+    group: "{{ oracle_install_group }}"
+    mode: '0755'
+  with_items:
+    - "{{ root_directory }}"
+    - "{{ scripts_directory}}"
+    - "{{ stage_dir }}"
+    - "{{ oracle_inventory}}"
+    - "{{ oracle_base }}"
+    - "{{ oracle_home }}"
+  tags:
+    - crdir
+- name: "Copy Oracle19c Database .zip file to {{ stage_dir }}"
+  copy:
+    src: /vagrant/oracle/LINUX.X64_193000_db_home.zip
+    dest: "{{ stage_dir }}/LINUX.X64_193000_db_home.zip"
+    owner: "{{ oracle_user }}"
+    group: "{{ oracle_install_group }}"
+  tags:
+    - copydb
+
+- name: Install unzip
+  yum:
+    name: unzip
+    state: present 
+
+- name: Unpack Oracle19c Database
+  unarchive: 
+    src: "{{ stage_dir }}/LINUX.X64_193000_db_home.zip"
+    dest: "{{ oracle_home }}"
+    remote_src: yes
+    mode: '0755'
+    group: "{{ oracle_install_group }}"
+    owner: "{{ oracle_user }}"
+  tags: 
+    - unpack 
+
+- name: Setup Oracle 19c response file
+  become_user: "{{ oracle_user }}"
+  template:
+    src: 19cSoftOnly.j2
+    dest: "{{ stage_dir }}/{{ oradbsoft_rsp }}.rsp"
+    mode: '0755'
+  tags:
+    - rspfile      
+
+- name: Install Oracle 19c Database Software
+  become_user: "{{ oracle_user }}"
+  shell: 
+    "{{oracle_home }}/runInstaller -silent -responseFile {{ stage_dir }}/{{ oradbsoft_rsp }}.rsp -ignorePrereqFailure"
+  ignore_errors: True
+  tags:
+    - install
+
+- name: Setup Inventory Settings
+  shell: /bin/sh "{{ oracle_inventory}}/orainstRoot.sh"
+  tags:
+    - install       
+#    - setinv  
+
+- name: Setup Permissions for Oracle
+  shell: /bin/sh "{{ oracle_home }}/root.sh"
+  tags:
+    - install
+#    - setperm  
+
+- name: Display post install message
+  debug:
+    msg: Install Single Instance Oracle Database Software complete
+  tags:
+    - install
+#    - end 
+
+- name: Bash_profile for user vagrant
+  become_user: oracle
+  blockinfile:
+    path: /home/oracle/.bash_profile
+    insertafter: '######### For ORACLE user #########'
+    state: present
+    block: |
+      export ORACLE_HOME=/u01/app/oracle/product/19.2.0/db100
+      export ORACLE_BASE=/u01/app/oracle
+      export PATH=$ORACLE_HOME/OPatch:$PATH
+      export PATH=$ORACLE_HOME/bin:$PATH
+      export ORACLE_SID=oracle
+  tags:
+    - install       
+#    - orpath     
+
+- name: Config .ora file
+  become_user: oracle 
+  copy:
+    src: "{{oracle_home}}/dbs/init.ora"
+    dest: "{{oracle_home}}/dbs/initoracle.ora"
+    mode: '0755'
+    remote_src: yes
+  tags:
+    - install
+#    - orafile    
+      

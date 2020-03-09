@@ -1,0 +1,4 @@
+work_dir: "/opt/wildfly"
+conf_dir: "/etc/wildfly"
+srcsys_dir: "/opt/wildfly/docs/contrib/scripts/systemd"
+dessys_dir: "/etc/systemd/system"

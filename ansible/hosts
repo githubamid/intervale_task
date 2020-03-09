@@ -1,0 +1,7 @@
+---
+  work:
+    hosts:
+      oracle:
+        ansible_host: 10.20.30.50
+      app:
+        ansible_host: 10.20.30.60

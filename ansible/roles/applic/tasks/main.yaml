@@ -1,0 +1,94 @@
+---
+- name: Install Java and unzip
+  apt: 
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - unzip
+    - openjdk-9-jdk
+  tags:
+    - inst
+
+- name: Download WildFly
+  get_url: 
+    url: https://download.jboss.org/wildfly/18.0.1.Final/wildfly-18.0.1.Final.zip
+    dest: /opt/wildfly-18.0.1.zip
+  tags:
+    - download
+
+- name: Create system group - wildfly
+  group:
+    name: wildfly
+    state: present
+    system: yes
+  tags:
+    - crgroup
+
+- name: Create system user - wildfly
+  user:
+    name: wildfly
+    home: /opt/wildfly
+    shell: /sbin/nologin
+    system: yes
+    group: wildfly
+  tags:
+    - cruser
+
+- name: Extract archive
+  unarchive: 
+    src: /opt/wildfly-18.0.1.zip
+    dest: /opt
+    remote_src: yes
+    owner: wildfly
+    group: wildfly
+  tags: 
+    - unpack   
+    
+- name: Copy Wildfly files
+  shell: | 
+    cp -r /opt/wildfly-18.0.1.Final/. /opt/wildfly/
+  tags:
+    - copy
+     
+- name: Create config directory
+  file:
+    name: /etc/wildfly
+    state: directory
+  tags:
+    - cretc  
+
+- name: Copy system, config, start scripts files
+  copy:
+    src: "{{ item.src }}" 
+    dest: "{{ item.dest }}"
+    remote_src: yes
+  with_items:
+    - { src: "{{ srcsys_dir }}/wildfly.conf", dest: "{{ conf_dir }}" }  
+    - { src: "{{ srcsys_dir }}/wildfly.service", dest: "{{ dessys_dir }}"  }
+    - { src: "{{ srcsys_dir }}/launch.sh", dest: "{{ work_dir }}/bin" }
+  tags:
+    - cpsys      
+
+- name: Set permission
+  shell: |
+    chown -R wildfly:wildfly /opt/wildfly
+    chmod +x "{{ work_dir }}/bin/launch.sh"
+    chmod +x "{{ dessys_dir }}/wildfly.service"
+  tags:
+    - setperm
+      
+- name: Start Wildfly
+  systemd:
+    daemon_reload: yes 
+    name: wildfly
+    state: started
+    enabled: yes
+  tags:
+    - start
+
+- name: Users
+  shell: |
+    /opt/wildfly/bin/add-user.sh -u 'adminuser' -p 'password!' -g 'admin' 
+  tags:
+    - manage

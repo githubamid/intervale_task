@@ -1,0 +1,12 @@
+---
+- name: Install WildFly
+  hosts: app
+  become: yes
+  roles:
+    - applic  
+                          
+- name: Install Oracle
+  hosts: oracle
+  become: yes
+  roles:
+    - db
