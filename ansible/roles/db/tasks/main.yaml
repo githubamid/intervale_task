@@ -124,4 +124,31 @@
   tags:
     - install
 #    - orafile    
-      
+
+- name: Copy dbora file in init directory 
+  copy:
+    src: dbora
+    dest: /etc/init.d/dbora
+    mode: '0750'
+  tags:
+    - cpora
+
+- name: Chkconfig on dbora 
+  shell: /sbin/chkconfig dbora on
+  tags:
+    - chkdbora
+
+- name: line in /etc/oratab
+  lineinfile:
+    path: /etc/oratab
+    line: oracle:/u01/app/oracle/product/19.2.0/db100:Y
+    state: present
+  tags:
+    - oratab
+
+- name: Start Oracle
+  service:
+    name: dbora
+    state: started
+  tags:
+    - start_oracle  
