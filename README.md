@@ -1,16 +1,16 @@
 # Intervale task
-##Prerequisites
+## Prerequisites
 
-###Vagrant 2.2.4 (on Windows)
+### Vagrant 2.2.4 (on Windows)
 
-###vagrant plugin list:
-####vagrant-guest_ansible (0.0.4, global)
-####vagrant-hostmanager (1.8.9, global)
-####vagrant-reload (0.0.1, global)
-####vagrant-vmware-esxi (2.4.4, global)
-####vagrant-winrm-syncedfolders (1.0.1, global)
+### vagrant plugin list:
+#### vagrant-guest_ansible (0.0.4, global)
+#### vagrant-hostmanager (1.8.9, global)
+#### vagrant-reload (0.0.1, global)
+#### vagrant-vmware-esxi (2.4.4, global)
+#### vagrant-winrm-syncedfolders (1.0.1, global)
 
-###ESXi 6.7 
+### ESXi 6.7 
 
 
 ## Part I.  Infrastructure installation
@@ -43,7 +43,7 @@ netstat -nlpt
 
 ### Check your successful installation on your browser
 
-#### Management user; adminuser, password: password! 
+#### Management user: "adminuser", password: "password!" 
 
 ```bash
 http://public ip guest host:8080
