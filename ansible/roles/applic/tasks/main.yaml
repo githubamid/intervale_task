@@ -6,7 +6,7 @@
     update_cache: yes
   with_items:
     - unzip
-    - openjdk-9-jdk
+    - openjdk-8-jdk
   tags:
     - inst
 
@@ -92,3 +92,33 @@
     /opt/wildfly/bin/add-user.sh -u 'adminuser' -p 'password!' -g 'admin' 
   tags:
     - manage
+
+- name: Copy launch.sh for management console
+  copy:
+    src: launch.sh 
+    dest: "{{ work_dir }}/bin"
+    mode: '0755'
+  notify:
+    - restart_wildfly
+  tags:
+    - cplaunch
+
+- name: Copy standalone.xml for jmx
+  copy:
+    src: standalone.xml
+    dest: "{{ xml_dir }}"
+    mode: '0644'
+  notify:
+    - restart_wildfly
+  tags:
+    - cpstand
+
+- name: Deploy Application - SampleWebApp
+  copy:
+    src: /vagrant/wildfly/SampleWebApp.war
+    dest: "{{ work_dir }}/standalone/deployments"
+  notify:
+    - restart_wildfly
+  tags:
+    - deploy
+     
