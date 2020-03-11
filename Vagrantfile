@@ -17,7 +17,7 @@ Vagrant.configure("2") do |config|
     vmconfig.vm.network "forwarded_port", guest: 9990, host: 9990
     vmconfig.vm.provider :vmware_esxi do |esxi|
         esxi.guest_memsize = "1024"
-        esxi.esxi_hostname = '192.168.186.128'
+        esxi.esxi_hostname = '192.168.0.250'
         esxi.esxi_username = 'root'
 	esxi.esxi_password = 'SpecProm2020'
     end
@@ -35,7 +35,7 @@ Vagrant.configure("2") do |config|
     vmconfig.vm.network "private_network", ip: "10.20.30.50"
     vmconfig.vm.provider :vmware_esxi do |esxi|
         esxi.guest_memsize = "10240"
-        esxi.esxi_hostname = '192.168.186.128'
+        esxi.esxi_hostname = '192.168.0.250'
         esxi.esxi_username = 'root'
 	esxi.esxi_password = 'SpecProm2020'
     end
@@ -52,7 +52,7 @@ Vagrant.configure("2") do |config|
     vmconfig.vm.network "private_network", ip: "10.20.30.40"
     vmconfig.vm.provider :vmware_esxi do |esxi|
         esxi.guest_memsize = "512"
-        esxi.esxi_hostname = '192.168.186.128'
+        esxi.esxi_hostname = '192.168.0.250'
         esxi.esxi_username = 'root'
 	esxi.esxi_password = 'SpecProm2020'
     end
