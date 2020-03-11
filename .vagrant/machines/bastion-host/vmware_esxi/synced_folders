@@ -1,1 +1,0 @@
-{"rsync":{"/vagrant":{"disabled":false,"guestpath":"/vagrant","hostpath":"E:/intervale_task","type":"rsync","__vagrantfile":true,"owner":"vagrant","group":"vagrant"}}}
