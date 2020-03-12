@@ -51,4 +51,7 @@ http://public ip guest host:9990
 http;//public ip guest host:8080/SampleWebApp
 ```
 
+## Note
+
+#### You have to execute "git config --global core.autocrlf false" on Windows
 
